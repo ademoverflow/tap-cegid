@@ -6,7 +6,11 @@ readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["ELT", "Cegid"]
 
-dependencies = ["singer-sdk~=0.42.1", "fs-s3fs~=1.1.1", "requests~=2.32.3"]
+dependencies = [
+    "singer-sdk~=0.42.1",
+    "fs-s3fs~=1.1.1",
+    "requests~=2.32.3",
+]
 
 [project.scripts]
 tap-cegid = 'tap_cegid.tap:TapCegid.cli'
