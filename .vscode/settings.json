@@ -1,4 +1,14 @@
 {
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+    },
     "python.defaultInterpreterPath": "./.venv/bin/python",
     "python.terminal.activateEnvironment": true,
+    "mypy-type-checker.args": [
+        "--config-file=pyproject.toml",
+    ],
+    "files.exclude": {
+        "**/__pycache__": true
+    }
 }
