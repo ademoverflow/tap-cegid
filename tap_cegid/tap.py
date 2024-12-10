@@ -5,7 +5,6 @@ from __future__ import annotations
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-# TODO: Import your custom stream types here:
 from tap_cegid import streams
 
 
@@ -14,42 +13,31 @@ class TapCegid(Tap):
 
     name = "tap-cegid"
 
-    # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "auth_token",
+            "username",
             th.StringType,
-            required=True,
-            secret=True,  # Flag config as protected.
-            title="Auth Token",
-            description="The token to authenticate against the API service",
+            title="Username",
+            description="The username to authenticate with the Cegid API.",
         ),
         th.Property(
-            "project_ids",
-            th.ArrayType(th.StringType),
-            required=True,
-            title="Project IDs",
-            description="Project IDs to replicate",
-        ),
-        th.Property(
-            "start_date",
-            th.DateTimeType,
-            description="The earliest record date to sync",
+            "password",
+            th.StringType,
+            title="Password",
+            secret=True,
+            description="The password to authenticate with the Cegid API.",
         ),
         th.Property(
             "api_url",
             th.StringType,
             title="API URL",
-            default="https://api.mysample.com",
-            description="The url for the API service",
+            description="The URL of the Cegid API client.",
         ),
         th.Property(
-            "user_agent",
+            "folder_id",
             th.StringType,
-            description=(
-                "A custom User-Agent header to send with each request. Default is "
-                "'<tap_name>/<tap_version>'"
-            ),
+            title="Folder ID",
+            description="The folder ID to use for the Cegid API client.",
         ),
     ).to_dict()
 
@@ -60,8 +48,7 @@ class TapCegid(Tap):
             A list of discovered streams.
         """
         return [
-            streams.GroupsStream(self),
-            streams.UsersStream(self),
+            streams.CustomerOrdersStream(self),
         ]
 
 
