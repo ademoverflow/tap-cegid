@@ -16,7 +16,6 @@ plugins:
     - about
     - stream-maps
 
-    # TODO: Declare settings and their types here:
     settings:
     - name: username
       label: Username
@@ -28,18 +27,17 @@ plugins:
       description: The password to use for authentication
       sensitive: true
 
-    - name: start_date
-      kind: date_iso8601
-      label: Start Date
-      description: Initial date to start extracting data from
+    - name: api_url
+      label: Api URL
+      description: The API url for the client.
 
-    # TODO: Declare required settings here:
+    - name: folder_id
+      label: Folder ID
+      description: Folder ID to use for the extraction.
+
     settings_group_validation:
-    - [username, password]
+    - [username, password, api_url, folder_id]
 
-    # TODO: Declare default configuration values here:
-    config:
-      start_date: '2010-01-01T00:00:00Z'
 
   loaders:
   - name: target-jsonl
