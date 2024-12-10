@@ -32,9 +32,6 @@ class CegidStream(RESTStream):
     # Update this value if necessary or override `parse_response`.
     records_jsonpath = "$[*]"
 
-    # Update this value if necessary or override `get_new_paginator`.
-    next_page_token_jsonpath = "$.next_page"  # noqa: S105
-
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
