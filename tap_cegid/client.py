@@ -35,7 +35,7 @@ class CegidStream(RESTStream):
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
-        return f"{self.config['api_url']}/{self.config['folder_id']}/api/"
+        return f"{self.config['api_url']}/{self.config['folder_id']}/api"
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:

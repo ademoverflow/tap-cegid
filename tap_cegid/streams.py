@@ -11,11 +11,11 @@ class CustomerOrdersStream(CegidStream):
     """Cegid customer orders stream."""
 
     name = "customer-orders"
-    path = "/api/customer-documents/v1?documentType=CustomerOrder"
+    path = "/customer-documents/v1?documentType=CustomerOrder"
 
     schema = th.PropertiesList(
         th.Property(
-            "headers",
+            "header",
             th.ObjectType(
                 th.Property(
                     "active",

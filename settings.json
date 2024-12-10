@@ -1,0 +1,49 @@
+{
+  "tap": "cegid",
+  "domain": "cegid.com",
+  "label": "Cegid",
+  "connector_repo": "git+https://github.com/ademoverflow/tap-cegid.git",
+  "connector_tag": "^v0.0.1",
+  "hasDemoTokens": false,
+  "api_ping_supported": false,
+  "tags": [
+    "cegid"
+  ],
+  "icon": "https://s3.amazonaws.com/cdn.hotglue.xyz/images/logos/salesforce.svg",
+  "type": "api",
+  "capabilities": [
+    "customData"
+  ],
+  "has_triggers": false,
+  "recipes": [
+  ],
+  "connect_ui_params": {
+    "username": {
+      "label": "Username",
+      "description": "Cegid username",
+      "type": "string",
+      "required": true
+    },
+    "password": {
+      "label": "Password",
+      "description": "Cegid password",
+      "type": "password",
+      "required": true
+    },
+    "api_url": {
+      "label": "API URL",
+      "description": "Cegid API URL",
+      "type": "string",
+      "required": true
+    },
+    "folder_id": {
+      "label": "Folder ID",
+      "description": "Cegid folder ID",
+      "type": "string",
+      "required": true
+    }
+  },
+  "schemaTables": [
+    "CustomerOrders"
+  ]
+}
