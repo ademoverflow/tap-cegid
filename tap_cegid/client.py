@@ -4,20 +4,17 @@ from __future__ import annotations
 
 import decimal
 import typing as t
-from importlib import resources
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.pagination import BaseAPIPaginator  # noqa: TC002
 from singer_sdk.streams import RESTStream
 
+from tap_cegid.utils.authenticate import get_token
+
 if t.TYPE_CHECKING:
     import requests
     from singer_sdk.helpers.types import Context
-
-
-# TODO: Delete this is if not using json files for schema definition
-SCHEMAS_DIR = resources.files(__package__) / "schemas"
 
 
 class CegidStream(RESTStream):
@@ -32,8 +29,7 @@ class CegidStream(RESTStream):
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
-        # TODO: hardcode a value here, or retrieve it from self.config
-        return "https://api.mysample.com"
+        return f"{self.config['api_url']}/{self.config['folder_id']}/api/"
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
@@ -42,10 +38,21 @@ class CegidStream(RESTStream):
         Returns:
             An authenticator instance.
         """
-        return BearerTokenAuthenticator.create_for_stream(
-            self,
-            token=self.config.get("auth_token", ""),
+        tokens = get_token(
+            self.config.get("username", ""),
+            self.config.get("password", ""),
         )
+
+        if not tokens:
+            message = "No tokens were returned from the API."
+            raise RuntimeError(message)
+        access_token = tokens.get("access_token", None)
+
+        if not access_token:
+            message = "No access token was returned from the API."
+            raise RuntimeError(message)
+
+        return BearerTokenAuthenticator.create_for_stream(self, token=access_token)
 
     @property
     def http_headers(self) -> dict:
@@ -56,7 +63,9 @@ class CegidStream(RESTStream):
         """
         # If not using an authenticator, you may also provide inline auth headers:
         # headers["Private-Token"] = self.config.get("auth_token")  # noqa: ERA001
-        return {}
+        return {
+            "Content-Type": "application/json",
+        }
 
     def get_new_paginator(self) -> BaseAPIPaginator:
         """Create a new pagination helper instance.
@@ -95,25 +104,6 @@ class CegidStream(RESTStream):
             params["order_by"] = self.replication_key
         return params
 
-    def prepare_request_payload(
-        self,
-        context: Context | None,  # noqa: ARG002
-        next_page_token: t.Any | None,  # noqa: ARG002, ANN401
-    ) -> dict | None:
-        """Prepare the data payload for the REST API request.
-
-        By default, no payload will be sent (return None).
-
-        Args:
-            context: The stream context.
-            next_page_token: The next page index or value.
-
-        Returns:
-            A dictionary with the JSON body for a POST requests.
-        """
-        # TODO: Delete this method if no payload is required. (Most REST APIs.)
-        return None
-
     def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
         """Parse the response and return an iterator of result records.
 
@@ -123,7 +113,7 @@ class CegidStream(RESTStream):
         Yields:
             Each record from the source.
         """
-        # TODO: Parse response body and return a set of records.
+        # Parse response body and return a set of records.
         yield from extract_jsonpath(
             self.records_jsonpath,
             input=response.json(parse_float=decimal.Decimal),
@@ -143,5 +133,5 @@ class CegidStream(RESTStream):
         Returns:
             The updated record dictionary, or ``None`` to skip the record.
         """
-        # TODO: Delete this method if not needed.
+        # Delete this method if not needed.
         return row
