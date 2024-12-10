@@ -7,7 +7,7 @@ import typing as t
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.pagination import BaseAPIPaginator  # noqa: TC002
+from singer_sdk.pagination import BaseOffsetPaginator
 from singer_sdk.streams import RESTStream
 
 from tap_cegid.utils.authenticate import get_token
@@ -15,6 +15,15 @@ from tap_cegid.utils.authenticate import get_token
 if t.TYPE_CHECKING:
     import requests
     from singer_sdk.helpers.types import Context
+
+
+class CegidPaginator(BaseOffsetPaginator):
+    """Cegid paginator class."""
+
+    def has_more(self, response: requests.Response) -> bool:
+        """Check if there are more records to fetch."""
+        data = response.json()
+        return len(data) > 0
 
 
 class CegidStream(RESTStream):
@@ -67,20 +76,9 @@ class CegidStream(RESTStream):
             "Content-Type": "application/json",
         }
 
-    def get_new_paginator(self) -> BaseAPIPaginator:
-        """Create a new pagination helper instance.
-
-        If the source API can make use of the `next_page_token_jsonpath`
-        attribute, or it contains a `X-Next-Page` header in the response
-        then you can remove this method.
-
-        If you need custom pagination that uses page numbers, "next" links, or
-        other approaches, please read the guide: https://sdk.meltano.com/en/v0.25.0/guides/pagination-classes.html.
-
-        Returns:
-            A pagination helper instance.
-        """
-        return super().get_new_paginator()
+    def get_new_paginator(self) -> BaseOffsetPaginator:
+        """Return a new paginator object."""
+        return CegidPaginator(start_value=0, page_size=100)
 
     def get_url_params(
         self,
